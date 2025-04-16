@@ -37,10 +37,10 @@ export default function FileUploadPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would handle the actual file upload
-    console.log("File to upload:", file);
-    console.log("Destination:", destination);
-    alert(`File "${file?.name}" would be uploaded to "${destination}"`);
+
+    // file upload
+
+    alert(`File "${file?.name}" would be uploaded to "${destination}"`); // delete
   };
 
   return (

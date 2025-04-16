@@ -44,7 +44,7 @@ export default function Sidebar() {
           </div>
 
           <nav className="space-y-1">
-            {menuItems.map((item, index) => (
+            {menuItems.map((item, index: number) => (
               <a
                 key={index}
                 href={item.href}
