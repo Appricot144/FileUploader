@@ -20,7 +20,7 @@ export default function Sidebar() {
   const menuItems = [
     { icon: House, label: "ホーム", href: "#" },
     { icon: UploadSimple, label: "アップロード", href: "#", active: true },
-    { icon: Files, label: "ファイル一覧", href: "#" },
+    { icon: Files, label: "ファイル履歴", href: "#" },
     { icon: Gear, label: "設定", href: "#" },
   ];
 
