@@ -7,7 +7,7 @@ import {
   Files,
   Gear,
   X,
-  DotsThree,
+  List,
 } from "@phosphor-icons/react";
 
 export default function Sidebar() {
@@ -30,7 +30,7 @@ export default function Sidebar() {
         className="md:hidden fixed top-3 left-3 z-50 p-2 rounded-md text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
         onClick={toggleSidebar}
       >
-        {isOpen ? <X /> : <DotsThree />}
+        {isOpen ? <X /> : <List />}
       </button>
 
       <aside
