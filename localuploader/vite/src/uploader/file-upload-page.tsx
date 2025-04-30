@@ -5,8 +5,18 @@ import type React from "react";
 import { useState } from "react";
 import Layout from "../layout";
 import { UploadSimple } from "@phosphor-icons/react";
+import useSWR from "swr";
+
+function Upload(distination: string, file: File) {
+  const { data, error, isLoading } = useSWR("/api/upload", fetcher);
+
+  return <></>;
+}
+
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function FileUploadPage() {
+  // TODO read code
   const [destination, setDestination] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
