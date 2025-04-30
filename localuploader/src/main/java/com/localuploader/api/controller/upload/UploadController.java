@@ -5,8 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,21 +16,17 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/upload")
 public class UploadController {
 
-    @Value("${upload.path}")
-    private String uploadPath;
-
     @PostMapping
-    public String upload(@RequestParam("files") List<MultipartFile> files) {
-        // TODO property PATH
-
+    public String upload(@RequestParam(defaultValue = "${upload.path}") String path,
+            @RequestBody List<MultipartFile> files) {
         for (MultipartFile eachFile : files) {
             try {
-                Files.write(Paths.get(uploadPath, eachFile.getOriginalFilename()), eachFile.getBytes());
+                Files.write(Paths.get(path, eachFile.getOriginalFilename()), eachFile.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        
+
         return "upload success";
     }
 }
