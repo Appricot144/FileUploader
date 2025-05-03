@@ -49,14 +49,16 @@ export default function FileUploadPage() {
 
     // file upload
 
-    alert(`File "${files}" would be uploaded to "${destination}"`); // delete
+    alert(`File "${files && Array.from(files).toString()}" would be uploaded to "${destination}"`); // delete
   };
 
   return (
     <Layout>
       <div className="flex-1 p-6">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">File Upload</h1>
+          <div className="flex item-center gap-2 mb-6">
+            <h1 className="text-2xl font-bold">File Upload</h1>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
@@ -112,13 +114,13 @@ export default function FileUploadPage() {
             </div>
             <button
               type="submit"
-              disabled={!files || !destination}
+              disabled={files?.length == 0 || !destination}
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
               アップロード
             </button>
             
-            <UploadFileList fileList={files} />
+            <UploadFileList fileList={files} setFiles={setFiles} />
           </form>
         </div>
       </div>
@@ -126,31 +128,67 @@ export default function FileUploadPage() {
   );
 }
 
-function UploadFile({file}: {file: File}) {
+type UpFile = {
+  id: number;
+  rawFile: File | null;
+}
+
+function UploadFile({ file, deleteFile }: { file: UpFile, deleteFile: (id: number) => void }) {
   return (
     <div className="flex justify-between items-center mt-1 p-2 bg-gray-100 rounded-md">
       <div>
-        <p className="text-sm font-medium">{file.name}</p>
+        <p className="text-sm font-medium">{file.rawFile?.name}</p>
         <p className="text-xs text-gray-500">
-            {(file.size / 1024).toFixed(2)} KB
+            {((file.rawFile ? file.rawFile.size : 1) / 1024).toFixed(2)} KB
         </p>
       </div>
-      <X />
+      <X onClick={() => { deleteFile(file.id) }} />
     </div>
   );
 }
 
-function UploadFileList({ fileList }: { fileList: FileList | null}) {
-  const rows: JSX.Element[] = [];
-  if (fileList) {
-    Array.from(fileList).forEach((file: File) => {
-      rows.push(<UploadFile file={file} />);
+function UploadFileList(
+  {
+    fileList,
+    setFiles,
+  }: {
+    fileList: FileList | null,
+    setFiles: React.Dispatch<React.SetStateAction<FileList | null>>,
+  }
+) {
+  if (!fileList) {
+    return <></>;
+  }
+
+  let upFileList: UpFile[] = [];
+  for (let i = 0; i < fileList?.length; i++) {
+    upFileList.push({
+      id: i,
+      rawFile: fileList?.item(i),
     });
   }
+
+  // event handler
+  const deleteFile = (id: number) => {
+    upFileList = upFileList.filter(f => f.id !== id);
+
+    const dt = new DataTransfer();
+    Array.from(upFileList).forEach((f) => {
+      if (f.rawFile) {
+        dt.items.add(f.rawFile);
+      }
+    });
+    setFiles(dt.files);
+  }
+
+  const rows: JSX.Element[] = [];
+  Array.from(fileList).forEach((file: File, i: number) => {
+    rows.push(<UploadFile file={{ id: i, rawFile: file }} deleteFile={deleteFile} />);
+  });
   return (
-    <>
+    <div className="space-y-2">
       <label htmlFor="" className="block text-sm font-medium">File List</label>
       <div>{rows}</div>
-    </>
+    </div>
   );
 }
