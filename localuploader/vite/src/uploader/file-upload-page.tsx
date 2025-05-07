@@ -10,13 +10,13 @@ import useSWRMutation from "swr/mutation";
 
 async function uploadFiles(
   url: string,
-  { files, destination }: { files: FileList; destination: string }
+  { arg }: { arg: { files: FileList; destination: string } }
 ) {
   // file upload ってformData使う必要ある...?
   const formData = new FormData();
-  formData.append("destination", destination);
-  for (let i = 0; i < files?.length; i++) {
-    const f = files.item(i);
+  formData.append("destination", arg.destination);
+  for (let i = 0; i < arg.files?.length; i++) {
+    const f = arg.files.item(i);
     if (f) {
       formData.append(f.name, new Blob([f], { type: f.type }));
     }
@@ -63,7 +63,9 @@ export default function FileUploadPage() {
 
   const handleSubmit = () => {
     // file upload
-    trigger(files);
+    if (files) {
+      trigger({ files, destination });
+    } 
 
     // fix me
     if (isMutating) toast.loading("Waiting...");
