@@ -5,20 +5,19 @@ import type React from "react";
 import { useState } from "react";
 import UploadFileList from "./filelist";
 import { UploadSimple } from "@phosphor-icons/react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import useSWRMutation from "swr/mutation";
 
 async function uploadFiles(
   url: string,
   { arg }: { arg: { files: FileList; destination: string } }
 ) {
-  // file upload ってformData使う必要ある...?
   const formData = new FormData();
   formData.append("destination", arg.destination);
   for (let i = 0; i < arg.files?.length; i++) {
     const f = arg.files.item(i);
     if (f) {
-      formData.append(f.name, new Blob([f], { type: f.type }));
+      formData.append("files", new Blob([f], { type: f.type }), f.name);
     }
   }
 
@@ -29,7 +28,10 @@ async function uploadFiles(
 }
 
 export default function FileUploadPage() {
-  const { trigger, isMutating } = useSWRMutation("http://localhost:8088/api/upload", uploadFiles);
+  const { trigger, isMutating } = useSWRMutation(
+    "http://localhost:8087/api/upload",
+    uploadFiles
+  );
 
   const [destination, setDestination] = useState("");
   const [files, setFiles] = useState<FileList | null>(null);
@@ -37,7 +39,7 @@ export default function FileUploadPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(e.target.files);
+      setFiles(e.target.files || null);
     } else {
       setFiles(files);
     }
@@ -61,19 +63,28 @@ export default function FileUploadPage() {
     }
   };
 
-  const handleSubmit = () => {
-    // file upload
-    if (files) {
-      trigger({ files, destination });
-    } 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    // fix me
-    if (isMutating) toast.loading("Waiting...");
-    toast.success("Successfully uploaded!");
+    if (!files || !destination) return;
+
+    try {
+      // const toastId = toast.loading("アップロード中...");
+      await trigger({ files, destination });
+      toast.success("アップロードが完了しました！");
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error(`アップロードに失敗しました: ${error}`);
+    } finally {
+      setFiles(null);
+    }
   };
 
   return (
     <div className="flex-1 p-6">
+      <div>
+        <Toaster />
+      </div>
       <div className="max-w-2xl mx-auto">
         <div className="flex item-center gap-2 mb-6">
           <h1 className="text-2xl font-bold">File Upload</h1>
@@ -81,10 +92,7 @@ export default function FileUploadPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label
-              htmlFor="destination"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="destination" className="block text-sm font-medium">
               Destination
             </label>
             <input

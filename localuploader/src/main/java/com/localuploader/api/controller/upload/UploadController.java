@@ -24,11 +24,11 @@ public class UploadController {
 	private final ObjectMapper mapper = new ObjectMapper();
 
     @PostMapping
-    public ResponseEntity<?> upload(@RequestParam(defaultValue = "${upload.path}") String path,
+    public ResponseEntity<?> upload(@RequestParam String destination,
             @RequestParam List<MultipartFile> files) throws JacksonException {
         for (MultipartFile eachFile : files) {
             try {
-                Files.write(Paths.get(path, eachFile.getOriginalFilename()), eachFile.getBytes());
+                Files.write(Paths.get(destination, eachFile.getOriginalFilename()), eachFile.getBytes());
             } catch (IOException | InvalidPathException e) {
                 e.printStackTrace();
                 String res = mapper.writeValueAsString(new UploadResponse("Failed to store a file to fs."));

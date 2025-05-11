@@ -11,6 +11,16 @@
       "name": "localhost に対して Chrome を起動する",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-LocaluploaderApplication<localuploader>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.localuploader.LocaluploaderApplication",
+      "projectName": "localuploader",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
