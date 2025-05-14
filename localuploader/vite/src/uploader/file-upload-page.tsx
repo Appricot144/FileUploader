@@ -21,10 +21,18 @@ async function uploadFiles(
     }
   }
 
-  await fetch(url, {
+  const response: Response = await fetch(url, {
     method: "POST",
     body: formData,
-  }).then((res) => res.json());
+  });
+
+  const contentType = response.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    const errorData = await response.json();
+    throw new Error(errorData.message);
+  }
+
+  return;
 }
 
 export default function FileUploadPage() {
@@ -92,7 +100,7 @@ export default function FileUploadPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="destination" className="block text-sm font-medium">
+            <label htmlFor="" className="block text-sm font-medium">
               Destination
             </label>
             <input
