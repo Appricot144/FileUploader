@@ -46,11 +46,7 @@ export default function FileUploadPage() {
   const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(e.target.files || null);
-    } else {
-      setFiles(files);
-    }
+    setFiles(e.target.files || null);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -80,16 +76,18 @@ export default function FileUploadPage() {
       // const toastId = toast.loading("アップロード中...");
       await trigger({ files, destination });
       toast.success("アップロードが完了しました！");
+      // clear file input
+      setFiles(null);
+      const fileInput = document.getElementById("file") as HTMLInputElement;
+      fileInput.value = "";
     } catch (error) {
       console.error("Upload error:", error);
       toast.error(`アップロードに失敗しました: ${error}`);
-    } finally {
-      setFiles(null);
     }
   };
 
   return (
-    <div className="flex-1 p-6">
+    <div className="bg-background flex-1 p-6">
       <div>
         <Toaster />
       </div>

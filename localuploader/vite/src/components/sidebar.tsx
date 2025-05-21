@@ -19,8 +19,13 @@ export default function Sidebar() {
 
   const menuItems = [
     { icon: House, label: "ホーム", href: "#" },
-    { icon: UploadSimple, label: "アップロード", href: "#", active: true },
-    { icon: Files, label: "ファイル履歴", href: "#" },
+    {
+      icon: UploadSimple,
+      label: "アップロード",
+      href: "/",
+      active: true,
+    },
+    { icon: Files, label: "ファイル履歴", href: "/history" },
     { icon: Gear, label: "設定", href: "#" },
   ];
 
@@ -34,7 +39,7 @@ export default function Sidebar() {
       </button>
 
       <aside
-        className={`bg-white border-r border-gray-200 w-64 shrink-0 transition-all duration-300 ease-in-out ${
+        className={`bg-white dark:bg-black border-r border-gray-200 w-64 shrink-0 transition-all duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 fixed md:static inset-y-0 left-0 z-40`}
       >

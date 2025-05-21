@@ -10,10 +10,10 @@ type UpFile = {
 
 function UploadFile({
   file,
-  onDeleteFile,
+  onClick,
 }: {
   file: UpFile;
-  onDeleteFile: (id: number) => void;
+  onClick: (id: number) => void;
 }) {
   return (
     <div className="flex justify-between items-center mt-1 p-2 bg-gray-100 rounded-md">
@@ -23,11 +23,7 @@ function UploadFile({
           {((file.rawFile ? file.rawFile.size : 1) / 1024).toFixed(2)} KB
         </p>
       </div>
-      <X
-        onClick={() => {
-          onDeleteFile(file.id);
-        }}
-      />
+      <X onClick={() => onClick(file.id)} />
     </div>
   );
 }
@@ -53,6 +49,13 @@ export default function UploadFileList({
   const deleteFile = (id: number) => {
     upFileList = upFileList.filter((f) => f.id !== id);
 
+    if (upFileList.length === 0) {
+      setFiles(null);
+      const fileInput = document.getElementById("file") as HTMLInputElement;
+      fileInput.value = "";
+      return;
+    }
+
     const dt = new DataTransfer();
     Array.from(upFileList).forEach((f) => {
       if (f.rawFile) {
@@ -64,7 +67,7 @@ export default function UploadFileList({
 
   const rows: JSX.Element[] = [];
   upFileList.forEach((file: UpFile) => {
-    rows.push(<UploadFile file={file} onDeleteFile={deleteFile} />);
+    rows.push(<UploadFile file={file} onClick={deleteFile} />);
   });
   return (
     <div className="space-y-2">
