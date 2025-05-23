@@ -31,19 +31,17 @@ async function uploadFiles(
     const errorData = await response.json();
     throw new Error(errorData.message);
   }
-
-  return;
 }
 
 export default function FileUploadPage() {
+  const [destination, setDestination] = useState("");
+  const [files, setFiles] = useState<FileList | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
   const { trigger, isMutating } = useSWRMutation(
     "http://localhost:8087/api/upload",
     uploadFiles
   );
-
-  const [destination, setDestination] = useState("");
-  const [files, setFiles] = useState<FileList | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFiles(e.target.files || null);
