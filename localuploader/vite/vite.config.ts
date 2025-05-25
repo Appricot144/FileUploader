@@ -8,4 +8,10 @@ export default defineConfig({
   build: {
     outDir: "../src/main/resources/static",
   },
+  server: {
+    watch: {
+      usePolling: true,
+      interval: 1000,
+    },
+  },
 });

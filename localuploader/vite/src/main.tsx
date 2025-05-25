@@ -12,8 +12,10 @@ ReactDOM.createRoot(root).render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Layout />}>
+        <Route path="/home" element={<>まだない</>} />
         <Route index element={<FileUploadPage />} />
         <Route path="/history" element={<FileHistory />} />
+        <Route path="/setting" element={<>まだない</>} />
       </Route>
     </Routes>
   </BrowserRouter>

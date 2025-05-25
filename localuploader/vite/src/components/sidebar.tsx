@@ -8,7 +8,21 @@ import {
   Gear,
   X,
   List,
+  Icon,
 } from "@phosphor-icons/react";
+
+type MenuItem = {
+  icon: Icon;
+  label: string;
+  href: string;
+};
+
+const menuItems: MenuItem[] = [
+  { icon: House, label: "ホーム", href: "/home" },
+  { icon: UploadSimple, label: "アップロード", href: "/" },
+  { icon: Files, label: "ファイル履歴", href: "/history" },
+  { icon: Gear, label: "設定", href: "/setting" },
+];
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,18 +30,6 @@ export default function Sidebar() {
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
-
-  const menuItems = [
-    { icon: House, label: "ホーム", href: "#" },
-    {
-      icon: UploadSimple,
-      label: "アップロード",
-      href: "/",
-      active: true,
-    },
-    { icon: Files, label: "ファイル履歴", href: "/history" },
-    { icon: Gear, label: "設定", href: "#" },
-  ];
 
   return (
     <>
@@ -48,24 +50,43 @@ export default function Sidebar() {
             <span className="text-lg font-semibold">メニュー</span>
           </div>
 
-          <nav className="space-y-1">
-            {menuItems.map((item, index: number) => (
-              <a
-                key={index}
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm ${
-                  item.active
-                    ? "bg-blue-50 text-blue-600 font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </a>
-            ))}
-          </nav>
+          <MenuList menuItems={menuItems} />
         </div>
       </aside>
     </>
   );
+}
+
+function MenuList({ menuItems }: { menuItems: MenuItem[] }) {
+  const currentPath = getParentPathname();
+  return (
+    <ul className="space-y-1">
+      {menuItems.map((item, index: number) => (
+        <li key={index}>
+          <Menu item={item} isActive={currentPath === item.href} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Menu({ item, isActive }: { item: MenuItem; isActive: boolean }) {
+  return (
+    <a
+      href={item.href}
+      className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm ${
+        isActive
+          ? "bg-blue-50 text-blue-600 font-medium"
+          : "text-gray-700 hover:bg-gray-100"
+      }`}
+    >
+      <item.icon className="h-5 w-5" />
+      <span>{item.label}</span>
+    </a>
+  );
+}
+
+function getParentPathname(): string {
+  const head = location.pathname.split("/").find((e) => e.length !== 0);
+  return head ? "/" + head : "/";
 }
