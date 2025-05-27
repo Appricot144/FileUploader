@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     outDir: "../src/main/resources/static",
+    emptyOutDir: true,
   },
   server: {
     watch: {

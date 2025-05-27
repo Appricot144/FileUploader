@@ -1,6 +1,5 @@
 "use client";
 
-import type React from "react";
 import { GitCommit } from "@phosphor-icons/react";
 
 import { useEffect, useState } from "react";
@@ -19,15 +18,39 @@ import { useEffect, useState } from "react";
   };
  */
 
+type FileInfo = {
+  name: string;
+  type: string;
+  size: string;
+};
+
+type HistoryItem = {
+  uploadDate: string;
+  destination: string;
+  files: FileInfo[];
+};
+
+const STORAGE_KEY = "uploadHistory";
+
+// const ERROR_MESSAGES = {
+//   INVALID_DATA: "無効なデータ形式です",
+//   STORAGE_ERROR: "ローカルストレージの読み取りに失敗しました",
+// } as const;
+
 const useFileHistory = () => {
-  const [log, setLog] = useState<JSON>();
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  // const [error, isError] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedFiles = localStorage.getItem("uploadHistory");
-    if (storedFiles) {
-      setLog(JSON.parse(storedFiles));
+    const historyJson = localStorage.getItem(STORAGE_KEY);
+    if (historyJson) {
+      setHistory(JSON.parse(historyJson));
     }
   }, []);
+
+  return {
+    history,
+  };
 };
 
 export default function FileHistoryPage() {
@@ -41,15 +64,42 @@ export default function FileHistoryPage() {
             Here are the files you have succecally uploaded.
           </p>
         </div>
-        <ol className="relative border-s-2 border-gray-200 dark:border-gray-700 mb-10">
-          <Log isLatest={true} />
-          <Log isLatest={false} />
-          <Log isLatest={false} />
-          <Log isLatest={false} />
-          <Log isLatest={false} />
-        </ol>
+        <LogList />
       </div>
     </div>
+  );
+}
+
+function LogList() {
+  const { history } = useFileHistory();
+
+  const dummyFile: FileInfo = {
+    name: "dummy.file",
+    type: "file",
+    size: "1000",
+  };
+
+  if (!history || history.length === 0) {
+    return (
+      <ol className="relative border-s-2 border-gray-200 dark:border-gray-700 mb-10">
+        <Log
+          isLatest={true}
+          item={{
+            uploadDate: "1970-01-01 00:00:00",
+            destination: "/No_files/have/been/uploaded/yet",
+            files: [dummyFile],
+          }}
+        />
+      </ol>
+    );
+  }
+
+  return (
+    <ol className="relative border-s-2 border-gray-200 dark:border-gray-700 mb-10">
+      {history.map((item, index) => (
+        <Log key={index} isLatest={index === 0} item={item} />
+      ))}
+    </ol>
   );
 }
 
@@ -61,7 +111,7 @@ function Latest() {
   );
 }
 
-function Log({ isLatest }: { isLatest: boolean }) {
+function Log({ isLatest, item }: { isLatest: boolean; item: HistoryItem }) {
   return (
     <li className="flex flex-col gap-2 ps-6">
       <span className="absolute flex items-center justify-center w-6 h-6 bg-white rounded-full -start-3 ring-6 ring-white dark:ring-gray-900 dark:bg-gray-900">
@@ -69,18 +119,32 @@ function Log({ isLatest }: { isLatest: boolean }) {
       </span>
       <div>
         <time className="text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-          Released on January 13th, 2022
+          Uploaded on{" "}
+          {new Date(item.uploadDate).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            timeZone: "Asia/Tokyo",
+          })}
           {isLatest ? <Latest /> : <></>}
         </time>
       </div>
       <div className="flex flex-col grow group p-2 mb-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Flowbite Application UI v2.0.0
+          {item.destination}
         </h3>
         <ul className="text-base font-normal text-gray-500 dark:text-gray-400">
-          <li>file1.txt</li>
-          <li>file2.txt</li>
-          <li>file3.txt</li>
+          {item.files.map((file, index) => (
+            <li key={index} className="flex justify-between">
+              <span>{file.name}</span>
+              <span>
+                (type: {file.type} {file.size}KB)
+              </span>
+            </li>
+          ))}
         </ul>
       </div>
     </li>
