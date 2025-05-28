@@ -2,8 +2,8 @@ import "./index.css";
 
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router";
-import FileUploadPage from "./uploader/file-upload-page";
-import FileHistoryPage from "./file-history/file-history";
+import FileUploadPage from "./uploader/file-uploader";
+import FileHistoryPage from "./history/file-history";
 import Layout from "./layout";
 
 const root = document.getElementById("root") as HTMLElement;

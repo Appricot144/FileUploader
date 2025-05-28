@@ -76,7 +76,7 @@ function LogList() {
   const dummyFile: FileInfo = {
     name: "dummy.file",
     type: "file",
-    size: "1000",
+    size: "100.0",
   };
 
   if (!history || history.length === 0) {
