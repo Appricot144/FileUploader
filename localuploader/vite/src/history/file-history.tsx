@@ -96,9 +96,14 @@ function LogList() {
 
   return (
     <ol className="relative border-s-2 border-gray-200 dark:border-gray-700 mb-10">
-      {history.map((item, index) => (
-        <Log key={index} isLatest={index === 0} item={item} />
-      ))}
+      {history
+        .sort(
+          (a, b) =>
+            new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
+        )
+        .map((item, index) => (
+          <Log key={index} isLatest={index === 0} item={item} />
+        ))}
     </ol>
   );
 }
@@ -127,6 +132,7 @@ function Log({ isLatest, item }: { isLatest: boolean; item: HistoryItem }) {
             hour: "numeric",
             minute: "numeric",
             second: "numeric",
+            hour12: false,
             timeZone: "Asia/Tokyo",
           })}
           {isLatest ? <Latest /> : <></>}
@@ -140,9 +146,7 @@ function Log({ isLatest, item }: { isLatest: boolean; item: HistoryItem }) {
           {item.files.map((file, index) => (
             <li key={index} className="flex justify-between">
               <span>{file.name}</span>
-              <span>
-                (type: {file.type} {file.size}KB)
-              </span>
+              <span>{(parseInt(file.size) / 1024).toFixed(2)}KB</span>
             </li>
           ))}
         </ul>
