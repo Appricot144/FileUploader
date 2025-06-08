@@ -30,7 +30,7 @@ type HistoryItem = {
   files: FileInfo[];
 };
 
-const STORAGE_KEY = "uploadHistory";
+export const FILE_HISTORY_STORAGE_KEY = "uploadHistory";
 
 // const ERROR_MESSAGES = {
 //   INVALID_DATA: "無効なデータ形式です",
@@ -42,7 +42,7 @@ const useFileHistory = () => {
   // const [error, isError] = useState<string | null>(null);
 
   useEffect(() => {
-    const historyJson = localStorage.getItem(STORAGE_KEY);
+    const historyJson = localStorage.getItem(FILE_HISTORY_STORAGE_KEY);
     if (historyJson) {
       setHistory(JSON.parse(historyJson));
     }
@@ -58,7 +58,7 @@ export default function FileHistoryPage() {
     <div className="bg-background flex-1 p-6">
       <div className="flex item-center flex-col gap-2 mb-6 max-w-2xl mx-auto">
         {/* File History */}
-        <div className="mb-6">
+        <div className="pb-2 mb-6 border-b-1 border-gray-200 dark:border-gray-700">
           <h1 className="text-2xl font-bold mb-2">File History</h1>
           <p className="text-sm text-gray-500">
             Here are the files you have succecally uploaded.
@@ -120,7 +120,7 @@ function Log({ isLatest, item }: { isLatest: boolean; item: HistoryItem }) {
   return (
     <li className="flex flex-col gap-2 ps-6">
       <span className="absolute flex items-center justify-center w-6 h-6 bg-white rounded-full -start-3 ring-6 ring-white dark:ring-gray-900 dark:bg-gray-900">
-        <GitCommit size={20} />
+        <GitCommit size={16} />
       </span>
       <div>
         <time className="text-sm font-normal leading-none text-gray-400 dark:text-gray-500">

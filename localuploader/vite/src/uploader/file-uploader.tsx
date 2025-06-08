@@ -4,6 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import UploadFileList from "./filelist";
+import { FILE_HISTORY_STORAGE_KEY } from "../history/file-history";
 import { UploadSimple } from "@phosphor-icons/react";
 import toast, { Toaster } from "react-hot-toast";
 import useSWRMutation from "swr/mutation";
@@ -35,15 +36,22 @@ async function uploadFiles(url: string, { arg }: { arg: UploadArgs }) {
   }
 }
 
+interface HistoryElement {
+  uploadDate: string;
+  destination: string;
+  file: FileInfo;
+}
 interface FileInfo {
   name: string;
   type: string;
   size: number;
 }
 
+const STORE_LIMIT_DAYS = 30;
+
 function storeHistory(args: UploadArgs) {
-  const existingHistory = localStorage.getItem("uploadHistory");
-  const uploadedFiles: FileInfo[] = existingHistory
+  const existingHistory = localStorage.getItem(FILE_HISTORY_STORAGE_KEY);
+  let uploadedFiles: HistoryElement[] = existingHistory
     ? JSON.parse(existingHistory)
     : [];
   // create json
@@ -56,6 +64,14 @@ function storeHistory(args: UploadArgs) {
       size: file.size,
     })),
   };
+  // delete history 30 days before
+  uploadedFiles = Array.from(uploadedFiles).filter((e) => {
+    const uploadDate = new Date(e.uploadDate);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(new Date().getDate() - STORE_LIMIT_DAYS);
+    return uploadDate > thirtyDaysAgo;
+  });
+
   // store args to local storage
   localStorage.setItem(
     "uploadHistory",
